@@ -1,0 +1,16 @@
+FROM ghcr.io/astral-sh/uv:python3.12-trixie-slim AS builder
+WORKDIR /app
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+COPY app ./app
+
+FROM python:3.12-slim-trixie
+WORKDIR /app
+RUN useradd --create-home --uid 1000 appuser
+COPY --from=builder --chown=appuser:appuser /app /app
+ENV PATH="/app/.venv/bin:$PATH" APP_ENVIRONMENT=production
+USER appuser
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=3s CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health').status==200 else 1)"
+CMD ["fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
