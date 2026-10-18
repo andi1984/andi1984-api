@@ -1,4 +1,22 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, JsonValue
+
+LOCATION_EXAMPLE: dict[str, JsonValue] = {
+    "city": "Heusweiler",
+    "region": "Saarland",
+    "country": "DE",
+    "label": "South-West Germany",
+}
+
+
+class LocationResponse(BaseModel):
+    model_config = ConfigDict(
+        from_attributes=True, json_schema_extra={"examples": [LOCATION_EXAMPLE]}
+    )
+
+    city: str
+    region: str = Field(description="State or region, e.g. Saarland")
+    country: str = Field(description="ISO 3166-1 alpha-2 country code, e.g. DE")
+    label: str = Field(description="Human-facing display form, e.g. South-West Germany")
 
 
 class ProfileResponse(BaseModel):
@@ -11,7 +29,7 @@ class ProfileResponse(BaseModel):
                     "handle": "andi1984",
                     "role": "Senior Product Engineer",
                     "employer": "Digital Science (Dimensions)",
-                    "location": "Saarbrücken, Germany",
+                    "location": LOCATION_EXAMPLE,
                     "bio": "Building for the web since 2012.",
                     "website": "https://andi1984.dev",
                     "avatar_url": "https://andi1984.dev/ava.jpg",
@@ -25,7 +43,7 @@ class ProfileResponse(BaseModel):
     handle: str
     role: str
     employer: str
-    location: str
+    location: LocationResponse
     bio: str
     website: str
     avatar_url: str

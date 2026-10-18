@@ -7,12 +7,20 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
+class Location:
+    city: str
+    region: str
+    country: str
+    label: str
+
+
+@dataclass(frozen=True, slots=True)
 class Profile:
     name: str
     handle: str
     role: str
     employer: str
-    location: str
+    location: Location
     bio: str
     website: str
     avatar_url: str
@@ -50,7 +58,9 @@ PROFILE = Profile(
     handle="andi1984",
     role="Senior Product Engineer",
     employer="Digital Science (Dimensions)",
-    location="Saarbrücken, Germany",
+    location=Location(
+        city="Heusweiler", region="Saarland", country="DE", label="South-West Germany"
+    ),
     bio=(
         "Building for the web since 2012. React and TypeScript at the core, "
         "Python and FastAPI behind them, and LLM features that are useful in practice."
