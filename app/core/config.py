@@ -1,10 +1,10 @@
 """Application configuration loaded from environment variables / .env."""
 
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     timezone: str = "UTC"
 
     # CORS: comma-separated list of allowed origins, e.g. "https://a.com,https://b.com"
-    cors_origins: list[str] = Field(default_factory=list)
+    cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)
 
     @field_validator("cors_origins", mode="before")
     @classmethod
