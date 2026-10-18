@@ -7,6 +7,7 @@ from fastapi import Depends, Request
 from app.core.config import Settings, get_settings
 from app.services.age import AgeService
 from app.services.clock import Clock, SystemClock
+from app.services.followers import FollowersService
 from app.services.writing import WritingService
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
@@ -33,3 +34,11 @@ def get_writing_service(request: Request) -> WritingService:
 
 
 WritingServiceDep = Annotated[WritingService, Depends(get_writing_service)]
+
+
+def get_followers_service(request: Request) -> FollowersService:
+    service: FollowersService = request.app.state.followers_service
+    return service
+
+
+FollowersServiceDep = Annotated[FollowersService, Depends(get_followers_service)]

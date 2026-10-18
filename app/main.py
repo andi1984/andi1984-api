@@ -16,6 +16,14 @@ from app.core.logging import configure_logging
 from app.middleware.request_context import RequestContextMiddleware
 from app.schemas.error import ErrorResponse
 from app.services.clock import SystemClock
+from app.services.followers import (
+    DevToSource,
+    FollowerSource,
+    FollowersService,
+    GitHubSource,
+    MastodonSource,
+    YouTubeSource,
+)
 from app.services.writing import HttpFeedFetcher, WritingService
 
 logger = logging.getLogger(__name__)
@@ -27,6 +35,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     logger.info("starting %s (%s)", settings.app_name, settings.environment)
     yield
     logger.info("shutting down")
+
+
+def _follower_sources(settings: Settings) -> list[FollowerSource]:
+    sources: list[FollowerSource] = [
+        GitHubSource(settings.github_username),
+        MastodonSource(settings.mastodon_instance_url, settings.mastodon_account),
+    ]
+    if settings.youtube_api_key:
+        sources.append(
+            YouTubeSource(settings.youtube_api_key.get_secret_value(), settings.youtube_handle)
+        )
+    if settings.devto_api_key:
+        sources.append(DevToSource(settings.devto_api_key.get_secret_value()))
+    return sources
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -51,6 +73,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         feed_url=settings.writing_feed_url,
         ttl=timedelta(seconds=settings.writing_cache_ttl_seconds),
         fetcher=HttpFeedFetcher(),
+        clock=SystemClock(settings.timezone),
+    )
+    app.state.followers_service = FollowersService(
+        sources=_follower_sources(settings),
+        ttl=timedelta(seconds=settings.followers_cache_ttl_seconds),
         clock=SystemClock(settings.timezone),
     )
 

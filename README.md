@@ -4,16 +4,18 @@ Personal API built with [FastAPI](https://fastapi.tiangolo.com/).
 
 ## Endpoints
 
-| Method | Path             | Description                              |
-|--------|------------------|------------------------------------------|
-| GET    | `/api/v1/age`    | Age in years (`current_year - 1984`)     |
-| GET    | `/api/v1/me`       | Profile: name, role, location, bio     |
-| GET    | `/api/v1/links`    | Website, socials, CV, RSS              |
-| GET    | `/api/v1/projects` | Featured side projects                 |
-| GET    | `/api/v1/now`      | What I'm building, learning, growing   |
-| GET    | `/api/v1/hobby`    | My hobby                               |
-| GET    | `/api/v1/health` | Liveness probe                           |
-| GET    | `/docs`          | Swagger UI (disabled in production)      |
+| Method | Path               | Description                                         |
+|--------|--------------------|-----------------------------------------------------|
+| GET    | `/api/v1/me`       | Profile: name, role, location, bio                  |
+| GET    | `/api/v1/links`    | Website, socials, CV, RSS                           |
+| GET    | `/api/v1/projects` | Featured side projects                              |
+| GET    | `/api/v1/now`      | What I'm building, learning, growing                |
+| GET    | `/api/v1/writing`  | Latest posts from the RSS feed (`?limit=`, `?tag=`) |
+| GET    | `/api/v1/followers`| Mastodon, YouTube, dev.to and GitHub follower counts|
+| GET    | `/api/v1/hobby`    | My hobby                                            |
+| GET    | `/api/v1/age`      | Age in years (`current_year - 1984`)                |
+| GET    | `/api/v1/health`   | Liveness probe                                      |
+| GET    | `/docs`            | Swagger UI (also `/redoc`, `/openapi.json`)         |
 
 All endpoints also work without the version prefix (e.g. `/me`).
 
@@ -51,6 +53,14 @@ All settings are read from environment variables (prefix `APP_`) or `.env`. See 
 | `APP_BIRTH_YEAR`   | `1984`        |                                           |
 | `APP_TIMEZONE`     | `UTC`         | IANA zone used to determine current year  |
 | `APP_CORS_ORIGINS` | *(empty)*     | Comma-separated; empty disables CORS      |
+| `APP_WRITING_FEED_URL` | `https://andi1984.dev/rss.xml` | Source for `/writing`        |
+| `APP_WRITING_CACHE_TTL_SECONDS` | `3600` |                                     |
+| `APP_FOLLOWERS_CACHE_TTL_SECONDS` | `3600` |                                   |
+| `APP_YOUTUBE_API_KEY` | *(unset)*  | Secret. Without it `youtube` is `null`    |
+| `APP_DEVTO_API_KEY`   | *(unset)*  | Secret. Without it `devto` is `null`      |
+
+`/followers` also reads `APP_GITHUB_USERNAME`, `APP_MASTODON_INSTANCE_URL`,
+`APP_MASTODON_ACCOUNT` and `APP_YOUTUBE_HANDLE`; the defaults point at my accounts.
 
 ## Project layout
 
