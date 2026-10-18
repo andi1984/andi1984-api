@@ -8,7 +8,7 @@ Personal API built with [FastAPI](https://fastapi.tiangolo.com/).
 |--------|--------------------|-----------------------------------------------------|
 | GET    | `/api/v1/me`       | Profile: name, role, location, bio                  |
 | GET    | `/api/v1/links`    | Website, socials, CV, RSS                           |
-| GET    | `/api/v1/projects` | Featured side projects                              |
+| GET    | `/api/v1/projects` | Projects shown on andi1984.dev/portfolio            |
 | GET    | `/api/v1/now`      | What I'm building, learning, growing                |
 | GET    | `/api/v1/writing`  | Latest posts from the RSS feed (`?limit=`, `?tag=`) |
 | GET    | `/api/v1/followers`| Mastodon, YouTube, dev.to and GitHub follower counts|
