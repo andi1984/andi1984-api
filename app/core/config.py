@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     # Domain settings
     birth_year: int = Field(default=1984, ge=1900, le=2100)
     timezone: str = "UTC"
+    writing_feed_url: str = "https://andi1984.dev/rss.xml"
+    writing_cache_ttl_seconds: int = Field(default=3600, ge=0)
 
     # CORS: comma-separated list of allowed origins, e.g. "https://a.com,https://b.com"
     cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)

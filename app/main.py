@@ -3,6 +3,7 @@
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import timedelta
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +15,8 @@ from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging
 from app.middleware.request_context import RequestContextMiddleware
 from app.schemas.error import ErrorResponse
+from app.services.clock import SystemClock
+from app.services.writing import HttpFeedFetcher, WritingService
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +38,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version=__version__,
         debug=settings.debug,
         lifespan=lifespan,
-        docs_url=None if settings.is_production else "/docs",
-        redoc_url=None if settings.is_production else "/redoc",
-        openapi_url=None if settings.is_production else "/openapi.json",
         responses={
             422: {"model": ErrorResponse, "description": "Validation error"},
             500: {"model": ErrorResponse, "description": "Internal server error"},
@@ -47,6 +47,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # Route dependencies resolve settings through get_settings(); bind them to *this* instance
     # so create_app(custom_settings) is honoured (important for tests).
     app.dependency_overrides[get_settings] = lambda: settings
+    app.state.writing_service = WritingService(
+        feed_url=settings.writing_feed_url,
+        ttl=timedelta(seconds=settings.writing_cache_ttl_seconds),
+        fetcher=HttpFeedFetcher(),
+        clock=SystemClock(settings.timezone),
+    )
 
     if settings.cors_origins:
         app.add_middleware(

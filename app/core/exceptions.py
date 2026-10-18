@@ -25,6 +25,11 @@ class NotFoundError(AppError):
     code = "not_found"
 
 
+class UpstreamError(AppError):
+    status_code = status.HTTP_502_BAD_GATEWAY
+    code = "upstream_unavailable"
+
+
 def _error_response(status_code: int, code: str, detail: object) -> JSONResponse:
     return JSONResponse(
         status_code=status_code, content={"error": {"code": code, "detail": detail}}

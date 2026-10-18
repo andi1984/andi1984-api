@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
 
 from app import __version__
+from app.core.config import Settings
+from app.main import create_app
 
 
 def test_get_age(client: TestClient) -> None:
@@ -36,6 +38,13 @@ def test_unknown_route_returns_error_envelope(client: TestClient) -> None:
     assert response.status_code == 404
 
 
-def test_openapi_available_outside_production(client: TestClient) -> None:
+def test_openapi_available(client: TestClient) -> None:
     assert client.get("/openapi.json").status_code == 200
     assert client.get("/docs").status_code == 200
+
+
+def test_docs_available_in_production() -> None:
+    app = create_app(Settings(environment="production", cors_origins=[]))
+    with TestClient(app) as production_client:
+        assert production_client.get("/docs").status_code == 200
+        assert production_client.get("/redoc").status_code == 200
