@@ -86,7 +86,7 @@ PROJECTS: tuple[Project, ...] = (
         tech=("Kotlin Multiplatform",),
     ),
     Project(
-        name="VSCode TinyPNG",
+        name="TinyPNG for VS Code",
         description="Image compression extension for VS Code",
         url="https://github.com/andi1984/vscode-tinypng",
         tech=("TypeScript",),
