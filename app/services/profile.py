@@ -11,7 +11,6 @@ class Location:
     city: str
     region: str
     country: str
-    label: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,9 +57,7 @@ PROFILE = Profile(
     handle="andi1984",
     role="Senior Product Engineer",
     employer="Digital Science (Dimensions)",
-    location=Location(
-        city="Heusweiler", region="Saarland", country="DE", label="South-West Germany"
-    ),
+    location=Location(city="Heusweiler", region="Saarland", country="DE"),
     bio=(
         "Building for the web since 2012. React and TypeScript at the core, "
         "Python and FastAPI behind them, and LLM features that are useful in practice."

@@ -9,12 +9,7 @@ def test_get_me(client: TestClient) -> None:
     assert body["name"] == "Andreas Sander"
     assert body["handle"] == "andi1984"
     assert body["website"] == "https://andi1984.dev"
-    assert body["location"] == {
-        "city": "Heusweiler",
-        "region": "Saarland",
-        "country": "DE",
-        "label": "South-West Germany",
-    }
+    assert body["location"] == {"city": "Heusweiler", "region": "Saarland", "country": "DE"}
 
 
 def test_get_links(client: TestClient) -> None:

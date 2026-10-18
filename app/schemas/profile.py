@@ -4,7 +4,6 @@ LOCATION_EXAMPLE: dict[str, JsonValue] = {
     "city": "Heusweiler",
     "region": "Saarland",
     "country": "DE",
-    "label": "South-West Germany",
 }
 
 
@@ -16,7 +15,6 @@ class LocationResponse(BaseModel):
     city: str
     region: str = Field(description="State or region, e.g. Saarland")
     country: str = Field(description="ISO 3166-1 alpha-2 country code, e.g. DE")
-    label: str = Field(description="Human-facing display form, e.g. South-West Germany")
 
 
 class ProfileResponse(BaseModel):
