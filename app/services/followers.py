@@ -24,14 +24,18 @@ class FollowerSource(Protocol):
 class GitHubSource:
     name = "github"
 
-    def __init__(self, username: str) -> None:
+    def __init__(self, username: str, token: str | None = None) -> None:
         self._username = username
+        self._token = token
 
     async def count(self) -> int:
+        headers = {"X-GitHub-Api-Version": "2022-11-28"}
+        if self._token:
+            # Unauthenticated calls share a 60/hour limit per IP, which hosting IPs often exhaust.
+            headers["Authorization"] = f"Bearer {self._token}"
         async with httpx.AsyncClient(timeout=TIMEOUT) as client:
             response = await client.get(
-                f"https://api.github.com/users/{self._username}",
-                headers={"X-GitHub-Api-Version": "2022-11-28"},
+                f"https://api.github.com/users/{self._username}", headers=headers
             )
             response.raise_for_status()
             return int(response.json()["followers"])
@@ -114,19 +118,20 @@ class FollowersService:
         sources: list[FollowerSource],
         ttl: timedelta,
         clock: Clock,
+        retry_after: timedelta = timedelta(minutes=1),
         platforms: tuple[str, ...] = ("mastodon", "youtube", "devto", "github"),
     ) -> None:
         self._sources = sources
         self._ttl = ttl
+        self._retry_after = retry_after
         self._clock = clock
-        self._platforms = platforms
         self._counts: dict[str, int | None] = dict.fromkeys(platforms)
-        self._fetched_at: datetime | None = None
+        self._next_refresh: datetime | None = None
         self._lock = asyncio.Lock()
 
     async def get(self) -> FollowerCounts:
         async with self._lock:
-            if self._is_stale():
+            if self._next_refresh is None or self._clock.now() >= self._next_refresh:
                 await self._refresh()
             return FollowerCounts(counts=dict(self._counts))
 
@@ -134,13 +139,14 @@ class FollowersService:
         results = await asyncio.gather(
             *(source.count() for source in self._sources), return_exceptions=True
         )
+        failed = False
         for source, result in zip(self._sources, results, strict=True):
             if isinstance(result, BaseException):
                 # Keep the last known value (if any) rather than dropping the platform.
                 logger.warning("follower count failed for %s: %r", source.name, result)
+                failed = True
             else:
                 self._counts[source.name] = result
-        self._fetched_at = self._clock.now()
-
-    def _is_stale(self) -> bool:
-        return self._fetched_at is None or self._clock.now() - self._fetched_at >= self._ttl
+        # Retry soon after a failure instead of serving a gap for the whole TTL.
+        delay = min(self._retry_after, self._ttl) if failed else self._ttl
+        self._next_refresh = self._clock.now() + delay

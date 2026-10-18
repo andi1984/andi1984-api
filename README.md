@@ -56,6 +56,7 @@ All settings are read from environment variables (prefix `APP_`) or `.env`. See 
 | `APP_WRITING_FEED_URL` | `https://andi1984.dev/rss.xml` | Source for `/writing`        |
 | `APP_WRITING_CACHE_TTL_SECONDS` | `3600` |                                     |
 | `APP_FOLLOWERS_CACHE_TTL_SECONDS` | `3600` |                                   |
+| `APP_GITHUB_TOKEN`    | *(unset)*  | Secret, no scopes. Avoids GitHub's 60/h anonymous limit |
 | `APP_YOUTUBE_API_KEY` | *(unset)*  | Secret. Without it `youtube` is `null`    |
 | `APP_DEVTO_API_KEY`   | *(unset)*  | Secret. Without it `devto` is `null`      |
 

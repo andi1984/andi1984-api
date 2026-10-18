@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     # Follower counts. YouTube and dev.to are skipped (null) unless their API key is set.
     followers_cache_ttl_seconds: int = Field(default=3600, ge=0)
     github_username: str = "andi1984"
+    # Optional; avoids the 60 requests/hour unauthenticated limit. No scopes needed.
+    github_token: SecretStr | None = None
     mastodon_instance_url: str = "https://dibbelabb.es"
     mastodon_account: str = "andi1984dev"
     youtube_handle: str = "@andi1984dev"

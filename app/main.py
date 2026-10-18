@@ -33,13 +33,19 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings: Settings = app.state.settings
     logger.info("starting %s (%s)", settings.app_name, settings.environment)
+    for platform, key in (("youtube", settings.youtube_api_key), ("devto", settings.devto_api_key)):
+        if not key:
+            logger.warning("/followers: %s is not configured and will report null", platform)
     yield
     logger.info("shutting down")
 
 
 def _follower_sources(settings: Settings) -> list[FollowerSource]:
     sources: list[FollowerSource] = [
-        GitHubSource(settings.github_username),
+        GitHubSource(
+            settings.github_username,
+            settings.github_token.get_secret_value() if settings.github_token else None,
+        ),
         MastodonSource(settings.mastodon_instance_url, settings.mastodon_account),
     ]
     if settings.youtube_api_key:

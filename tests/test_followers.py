@@ -165,3 +165,30 @@ def test_get_followers(client: TestClient, stub_github: StubSource) -> None:
         "devto": None,
         "github": 65,
     }
+
+
+@pytest.mark.anyio
+async def test_retries_failed_source_after_a_minute_not_the_full_ttl() -> None:
+    github, clock = StubSource("github", 65), MutableClock(START)
+    github.fail = True
+    service = FollowersService(sources=[github], ttl=timedelta(hours=1), clock=clock)
+
+    assert (await service.get()).counts["github"] is None
+    clock.current = START + timedelta(seconds=59)
+    await service.get()
+    assert github.calls == 1
+
+    github.fail = False
+    clock.current = START + timedelta(minutes=1)
+    assert (await service.get()).counts["github"] == 65
+    assert github.calls == 2
+
+
+@pytest.mark.anyio
+async def test_github_source_sends_token_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["Authorization"] == "Bearer gh-token"
+        return httpx.Response(200, json={"followers": 65})
+
+    mock_http(monkeypatch, handler)
+    assert await GitHubSource("andi1984", "gh-token").count() == 65
