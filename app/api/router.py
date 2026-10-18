@@ -1,7 +1,9 @@
 from fastapi import APIRouter
 
-from app.api.v1 import age, health
+from app.api.v1 import age, health, hobby, profile
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["health"])
 api_router.include_router(age.router, tags=["age"])
+api_router.include_router(hobby.router, tags=["hobby"])
+api_router.include_router(profile.router, tags=["profile"])

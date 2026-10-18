@@ -7,10 +7,15 @@ Personal API built with [FastAPI](https://fastapi.tiangolo.com/).
 | Method | Path             | Description                              |
 |--------|------------------|------------------------------------------|
 | GET    | `/api/v1/age`    | Age in years (`current_year - 1984`)     |
+| GET    | `/api/v1/me`       | Profile: name, role, location, bio     |
+| GET    | `/api/v1/links`    | Website, socials, CV, RSS              |
+| GET    | `/api/v1/projects` | Featured side projects                 |
+| GET    | `/api/v1/now`      | What I'm building, learning, growing   |
+| GET    | `/api/v1/hobby`    | My hobby                               |
 | GET    | `/api/v1/health` | Liveness probe                           |
 | GET    | `/docs`          | Swagger UI (disabled in production)      |
 
-`/age` and `/health` also work without the version prefix.
+All endpoints also work without the version prefix (e.g. `/me`).
 
 ```json
 GET /api/v1/age
