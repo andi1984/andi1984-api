@@ -116,6 +116,31 @@ LINKS: tuple[Link, ...] = (
 # List order is display order; every listed project is shown on andi1984.dev/portfolio.
 PROJECTS: tuple[Project, ...] = (
     Project(
+        id="feedrico",
+        name="Feedrico",
+        tagline="All your favourite sites, in one calm place.",
+        description=(
+            "A local-only RSS reader for the desktop. It gathers new articles from the sites "
+            "you choose and shows them newest first: nothing ranked, recommended or hidden. "
+            "Articles and their pictures are saved for offline reading, and everything lives "
+            "in one Library folder you can carry to another computer on a USB stick. No "
+            "account, no backend, no telemetry; bring your sites over from another reader "
+            "with an OPML file."
+        ),
+        homepage="https://viberfasend.github.io/feedrico/",
+        repository="https://github.com/viberfasend/feedrico",
+        ai_assisted=True,
+        category="NewsApplication",
+        tech=("Rust", "Tauri", "Svelte", "TypeScript", "SQLite"),
+        platforms=("macOS", "Linux", "Windows"),
+        license="GPL-3.0-or-later",
+        languages=(),
+        facts=(
+            Fact(label="Layouts", value="List, Cards, Magazine, Gallery"),
+            Fact(label="Storage", value="Portable Library folder"),
+        ),
+    ),
+    Project(
         id="ferrico",
         name="Ferrico",
         tagline="A home for the links I want to keep.",

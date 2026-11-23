@@ -39,6 +39,7 @@ def test_get_projects_keeps_display_order(client: TestClient) -> None:
     response = client.get("/api/v1/projects")
     assert response.status_code == 200
     assert [project["id"] for project in response.json()] == [
+        "feedrico",
         "ferrico",
         "primico",
         "tinypng",
